@@ -16,7 +16,7 @@ The application does not mirror public documentation sites. Five compact guides 
 
 ## Stack And Delivery
 
-- React 19.2.7 and TypeScript 7.0.2
+- React 19.2.7 and TypeScript 6.0.3
 - Vite 8.1.4 with production base `/zealrn-web/`
 - CodeMirror 6 packages pinned exactly in `package-lock.json`
 - IndexedDB schema version 1 through `idb` 8.0.3

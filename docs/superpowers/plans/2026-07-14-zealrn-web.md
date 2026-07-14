@@ -6,7 +6,7 @@
 
 **Architecture:** A hash-addressed React SPA reads bundled original guides and seeds them into versioned IndexedDB. Feature modules isolate documentation, notes, playground, and PWA/storage behavior; `vite-plugin-pwa` generates the service worker and GitHub Actions deploys only static build output.
 
-**Tech Stack:** React 19.2.7, TypeScript 7.0.2, Vite 8.1.4, CodeMirror 6, idb 8.0.3, fflate 0.8.3, Vitest 4.1.10, Playwright 1.61.1.
+**Tech Stack:** React 19.2.7, TypeScript 6.0.3, Vite 8.1.4, CodeMirror 6, idb 8.0.3, fflate 0.8.3, Vitest 4.1.10, Playwright 1.61.1.
 
 ## Global Constraints
 
