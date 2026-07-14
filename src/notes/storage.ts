@@ -117,6 +117,19 @@ export async function deleteZealDatabase(name = NOTES_DATABASE_NAME): Promise<vo
   await deleteDB(name);
 }
 
+export async function getPreference<T>(key: string, name = NOTES_DATABASE_NAME): Promise<T | undefined> {
+  const database = await openZealDatabase(name);
+  const record = await database.get('preferences', key);
+  database.close();
+  return record?.value as T | undefined;
+}
+
+export async function setPreference(key: string, value: unknown, name = NOTES_DATABASE_NAME): Promise<void> {
+  const database = await openZealDatabase(name);
+  await database.put('preferences', { key, value });
+  database.close();
+}
+
 export async function seedStarterDocuments(database: IDBPDatabase<ZealDatabase>): Promise<void> {
   const transaction = database.transaction(['documents', 'documentPages'], 'readwrite');
   for (const document of documents) {

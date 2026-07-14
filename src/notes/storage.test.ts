@@ -5,9 +5,11 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import {
   createNotesRepository,
   deleteZealDatabase,
+  getPreference,
   openZealDatabase,
   pageIdentity,
   seedStarterDocuments,
+  setPreference,
   type NotePage,
 } from './storage';
 
@@ -55,6 +57,11 @@ describe('notes database', () => {
     expect(await database.count('documents')).toBe(5);
     expect(await database.count('documentPages')).toBe(15);
     database.close();
+  });
+
+  it('persists browser preferences in the versioned database', async () => {
+    await setPreference('theme', 'dark', databaseName);
+    expect(await getPreference('theme', databaseName)).toBe('dark');
   });
 
   it('inserts and updates one Unicode note per page', async () => {

@@ -15,9 +15,17 @@ import { lazy, Suspense, useEffect, useMemo, useState } from 'react';
 import { hashFor, parseHash, resolveTheme, type Route, type ThemePreference, type View } from './app-state';
 import { DocsView } from './docs/DocsView';
 import { AllNotesView } from './notes/AllNotesView';
+import { setPreference } from './notes/storage';
+import { PwaStatus } from './pwa/PwaStatus';
+import { SettingsView } from './settings/SettingsView';
 import { StorageView } from './storage/StorageView';
 
 const WebPlayground = lazy(() => import('./playground/WebPlayground').then((module) => ({ default: module.WebPlayground })));
+
+interface BeforeInstallPromptEvent extends Event {
+  prompt(): Promise<void>;
+  userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
+}
 
 const navigation: Array<{ view: View; label: string; icon: typeof BookOpen }> = [
   { view: 'docs', label: 'Docs', icon: BookOpen },
@@ -41,6 +49,7 @@ export default function App() {
     const value = localStorage.getItem('zealrn-web:theme');
     return value === 'light' || value === 'dark' ? value : 'system';
   });
+  const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent>();
   const systemDark = useMemo(() => window.matchMedia('(prefers-color-scheme: dark)'), []);
 
   useEffect(() => {
@@ -55,8 +64,18 @@ export default function App() {
     apply();
     systemDark.addEventListener('change', apply);
     localStorage.setItem('zealrn-web:theme', theme);
+    void setPreference('theme', theme);
     return () => systemDark.removeEventListener('change', apply);
   }, [systemDark, theme]);
+
+  useEffect(() => {
+    const capture = (event: Event) => {
+      event.preventDefault();
+      setInstallPrompt(event as BeforeInstallPromptEvent);
+    };
+    window.addEventListener('beforeinstallprompt', capture);
+    return () => window.removeEventListener('beforeinstallprompt', capture);
+  }, []);
 
   useEffect(() => {
     const setConnected = () => setOnline(navigator.onLine);
@@ -107,20 +126,13 @@ export default function App() {
       {activeView === 'notes' && <AllNotesView onOpenPage={(documentId, pagePath) => navigate({ view: 'docs', documentId, pagePath })} />}
       {activeView === 'playground' && <Suspense fallback={<p className="loading-view" role="status">Loading playground…</p>}><WebPlayground /></Suspense>}
       {activeView === 'storage' && <StorageView />}
-      {activeView === 'settings' && (
-        <section className="settings-view" id="main-content">
-          <p className="eyebrow">Preferences</p><h1>Settings</h1>
-          <label htmlFor="appearance">Appearance</label>
-          <select id="appearance" value={theme} onChange={(event) => setTheme(event.target.value as ThemePreference)}>
-            <option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option>
-          </select>
-        </section>
-      )}
+      {activeView === 'settings' && <SettingsView theme={theme} onThemeChange={setTheme} canInstall={Boolean(installPrompt)} onInstall={() => { if (installPrompt) void installPrompt.prompt().then(() => setInstallPrompt(undefined)); }} />}
       {activeView === 'desktop' && (
         <section className="desktop-view" id="main-content">
-          <p className="eyebrow">The complete offline workspace</p>
+          <p className="eyebrow">Move beyond the browser trial</p>
           <h1>Get ZealRN Desktop</h1>
-          <p>Desktop adds the full docset catalog, large offline libraries, native SQLite storage, Linux and Windows packages, and external-terminal integration.</p>
+          <p>ZealRN Web is a free trial with five compact starter guides. Desktop is the complete offline learning workspace.</p>
+          <ul className="desktop-features"><li><strong>Full docset catalog</strong><span>Download from the complete Zeal catalog and keep large libraries offline.</span></li><li><strong>Native local storage</strong><span>SQLite notes and filesystem exports without browser storage limits.</span></li><li><strong>Linux and Windows packages</strong><span>AppImage, Debian package, portable Windows ZIP, and Windows installer.</span></li><li><strong>Developer tools</strong><span>Native external-terminal integration alongside documentation and the Web Playground.</span></li></ul>
           <div className="callout"><strong>Desktop alpha download coming soon.</strong><span>Follow development on GitHub.</span></div>
           <a className="primary-button link-button" href="https://github.com/abnzrdev/zealrn" rel="noreferrer">View ZealRN Desktop</a>
         </section>
@@ -134,6 +146,8 @@ export default function App() {
         ))}
       </nav>
 
+      <PwaStatus />
+
       {showIntro && (
         <div className="dialog-backdrop" role="presentation">
           <section className="intro-dialog" role="dialog" aria-modal="true" aria-labelledby="intro-title">
@@ -145,7 +159,7 @@ export default function App() {
             <button className="primary-button" type="button" autoFocus onClick={() => { localStorage.setItem('zealrn-web:intro', 'seen'); setShowIntro(false); }}>
               Start learning
             </button>
-            <button className="text-button" type="button" onClick={() => selectView('desktop')}>Compare with Desktop</button>
+            <button className="text-button" type="button" onClick={() => { setShowIntro(false); selectView('desktop'); }}>Compare with Desktop</button>
           </section>
         </div>
       )}
