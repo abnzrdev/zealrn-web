@@ -93,4 +93,44 @@ describe('LearningNotesPanel', () => {
 
     expect(screen.getByLabelText('Note for current page')).toHaveValue('> Selected café text');
   });
+
+  it('preserves draft text while collapsed and exposes an accessible toggle', async () => {
+    const notes = repository();
+    const { rerender } = render(
+      <LearningNotesPanel
+        page={page}
+        repository={notes}
+        onOpenAllNotes={() => undefined}
+        collapsed={false}
+        onToggleCollapsed={() => undefined}
+      />,
+    );
+    await waitFor(() => expect(screen.getByLabelText('Note for current page')).toBeEnabled());
+    fireEvent.change(screen.getByLabelText('Note for current page'), { target: { value: 'Keep this draft' } });
+
+    expect(screen.getByRole('button', { name: 'Collapse Learning Notes' })).toHaveAttribute('aria-expanded', 'true');
+    rerender(
+      <LearningNotesPanel
+        page={page}
+        repository={notes}
+        onOpenAllNotes={() => undefined}
+        collapsed
+        onToggleCollapsed={() => undefined}
+      />,
+    );
+
+    expect(screen.getByRole('button', { name: 'Expand Learning Notes' })).toHaveAttribute('aria-expanded', 'false');
+    expect(screen.queryByLabelText('Note for current page')).not.toBeInTheDocument();
+
+    rerender(
+      <LearningNotesPanel
+        page={page}
+        repository={notes}
+        onOpenAllNotes={() => undefined}
+        collapsed={false}
+        onToggleCollapsed={() => undefined}
+      />,
+    );
+    expect(screen.getByLabelText('Note for current page')).toHaveValue('Keep this draft');
+  });
 });

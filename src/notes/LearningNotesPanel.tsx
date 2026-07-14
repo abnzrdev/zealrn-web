@@ -1,4 +1,4 @@
-import { NotebookTabs, Quote, Save, Trash2, X } from 'lucide-react';
+import { NotebookPen, NotebookTabs, PanelRightClose, Quote, Save, Trash2, X } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { appendSelection } from './note-utils';
@@ -26,9 +26,19 @@ interface LearningNotesPanelProps {
   repository?: NotesRepository;
   mobileOpen?: boolean;
   onCloseMobile?: () => void;
+  collapsed?: boolean;
+  onToggleCollapsed?: () => void;
 }
 
-export function LearningNotesPanel({ page, onOpenAllNotes, repository: suppliedRepository, mobileOpen = false, onCloseMobile }: LearningNotesPanelProps) {
+export function LearningNotesPanel({
+  page,
+  onOpenAllNotes,
+  repository: suppliedRepository,
+  mobileOpen = false,
+  onCloseMobile,
+  collapsed = false,
+  onToggleCollapsed,
+}: LearningNotesPanelProps) {
   const [repository, setRepository] = useState(suppliedRepository);
   const [note, setNote] = useState<LearningNote>();
   const [content, setContent] = useState('');
@@ -131,31 +141,58 @@ export function LearningNotesPanel({ page, onOpenAllNotes, repository: suppliedR
     draft.current = { identity, page: currentPage, content: '', dirty: false };
   };
 
+  const statusClass = `save-status status-${status.toLowerCase().replace(/[^a-z]+/g, '-').replace(/^-|-$/g, '')}`;
+  const showCollapsedRail = collapsed && !mobileOpen;
+
   return (
-    <aside className={mobileOpen ? 'notes-pane learning-notes mobile-open' : 'notes-pane learning-notes'} aria-label="Learning Notes">
-      <div className="pane-heading"><span>Learning Notes</span><button className="icon-button notes-close" type="button" aria-label="Close Learning Notes" onClick={onCloseMobile}><X /></button><span className={`save-status status-${status.toLowerCase().replace(/[^a-z]+/g, '-').replace(/^-|-$/g, '')}`}>{status}</span></div>
-      <div className="note-context"><strong>{currentPage.documentTitle}</strong><span>{currentPage.pageTitle}</span><code>{currentPage.pagePath}</code></div>
-      <div className="notes-actions" aria-label="Note actions">
-        <button type="button" onClick={saveNow} disabled={loading || status === 'Saving…'}><Save aria-hidden="true" /> Save</button>
-        <button type="button" onClick={addSelection} disabled={loading}><Quote aria-hidden="true" /> Add Selection</button>
-        <button type="button" onClick={onOpenAllNotes}><NotebookTabs aria-hidden="true" /> All Notes</button>
-        <NoteExportMenu note={note} />
-        <button className="danger-action" type="button" onClick={() => void deleteNote()} disabled={!note}><Trash2 aria-hidden="true" /><span className="sr-only">Delete note</span></button>
-      </div>
-      <textarea
-        aria-label="Note for current page"
-        value={content}
-        disabled={loading}
-        placeholder="Write what you learned from this page…"
-        onChange={(event) => changeContent(event.target.value)}
-        onKeyDown={(event) => {
-          if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's') {
-            event.preventDefault();
-            saveNow();
-          }
-        }}
-      />
-      <p className="notes-local-copy">Stored only in this browser. Export backups before clearing site data.</p>
+    <aside className={`${mobileOpen ? 'notes-pane learning-notes mobile-open' : 'notes-pane learning-notes'}${showCollapsedRail ? ' collapsed' : ''}`} aria-label="Learning Notes">
+      {showCollapsedRail ? (
+        <button
+          className="notes-rail"
+          type="button"
+          aria-label="Expand Learning Notes"
+          aria-expanded="false"
+          aria-controls="learning-notes-content"
+          onClick={onToggleCollapsed}
+        >
+          <NotebookPen aria-hidden="true" />
+          <span>Learning Notes</span>
+          <span className={statusClass} aria-label={status} title={status} />
+        </button>
+      ) : (
+        <>
+          <div className="pane-heading notes-heading">
+            <span>Learning Notes</span>
+            <button className="icon-button notes-collapse" type="button" aria-label="Collapse Learning Notes" aria-expanded="true" aria-controls="learning-notes-content" onClick={onToggleCollapsed}><PanelRightClose /></button>
+            <button className="icon-button notes-close" type="button" aria-label="Close Learning Notes" onClick={onCloseMobile}><X /></button>
+            <span className={statusClass}>{status}</span>
+          </div>
+          <div className="notes-content" id="learning-notes-content">
+            <div className="note-context"><strong>{currentPage.documentTitle}</strong><span>{currentPage.pageTitle}</span><code>{currentPage.pagePath}</code></div>
+            <div className="notes-actions" aria-label="Note actions">
+              <button type="button" onClick={saveNow} disabled={loading || status === 'Saving…'}><Save aria-hidden="true" /> Save</button>
+              <button type="button" onClick={addSelection} disabled={loading}><Quote aria-hidden="true" /> Add Selection</button>
+              <button type="button" onClick={onOpenAllNotes}><NotebookTabs aria-hidden="true" /> All Notes</button>
+              <NoteExportMenu note={note} />
+              <button className="danger-action" type="button" onClick={() => void deleteNote()} disabled={!note}><Trash2 aria-hidden="true" /><span className="sr-only">Delete note</span></button>
+            </div>
+            <textarea
+              aria-label="Note for current page"
+              value={content}
+              disabled={loading}
+              placeholder="Write what you learned from this page…"
+              onChange={(event) => changeContent(event.target.value)}
+              onKeyDown={(event) => {
+                if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's') {
+                  event.preventDefault();
+                  saveNow();
+                }
+              }}
+            />
+            <p className="notes-local-copy">Stored only in this browser. Export backups before clearing site data.</p>
+          </div>
+        </>
+      )}
     </aside>
   );
 }
