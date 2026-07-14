@@ -158,6 +158,41 @@ pre { overflow: auto; padding: 1.1rem; border: 1px solid var(--rule); background
 .note-detail-actions > span { margin-left: auto; color: var(--ink-soft); font-size: 0.8rem; }
 .danger-action { color: var(--accent); }
 .empty-detail { margin: auto; color: var(--ink-soft); text-align: center; }
+.loading-view { margin: auto; color: var(--ink-soft); }
+
+.playground-view { flex: 1; min-height: 0; display: flex; flex-direction: column; padding: 1.25rem; }
+.playground-heading { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.playground-heading h1 { margin: 0.15rem 0; font-family: Georgia, serif; font-size: 2.25rem; font-weight: 500; }
+.playground-controls { display: flex; align-items: center; gap: 0.5rem; }
+.playground-controls button { display: inline-flex; align-items: center; gap: 0.4rem; }
+.playground-controls svg { width: 1rem; }
+.auto-run { min-height: 2.6rem; display: inline-flex; align-items: center; gap: 0.4rem; padding: 0 0.65rem; border: 1px solid var(--rule); background: var(--surface); font-size: 0.82rem; }
+.security-warning { margin: 0.6rem 0 1rem; color: var(--ink-soft); font-size: 0.78rem; }
+.playground-layout { flex: 1; min-height: 34rem; display: grid; grid-template-columns: minmax(24rem, 1fr) minmax(24rem, 1fr); border: 1px solid var(--rule); }
+.editor-workspace, .output-workspace { min-width: 0; min-height: 0; display: flex; flex-direction: column; }
+.editor-workspace { border-right: 1px solid var(--rule); }
+.workspace-tabs { flex: 0 0 2.65rem; display: flex; align-items: stretch; border-bottom: 1px solid var(--rule); background: var(--surface); }
+.workspace-tabs button { min-height: 2.65rem; padding: 0 0.85rem; border: 0; border-right: 1px solid var(--rule); border-bottom: 3px solid transparent; background: transparent; color: var(--ink-soft); }
+.workspace-tabs button.active { border-bottom-color: var(--accent); color: var(--ink); }
+.workspace-tabs button span { margin-left: 0.25rem; color: var(--ink-soft); font-size: 0.7rem; }
+.workspace-tabs .clear-console { margin-left: auto; display: flex; align-items: center; gap: 0.35rem; border-right: 0; border-left: 1px solid var(--rule); font-size: 0.72rem; }
+.workspace-tabs svg { width: 0.9rem; }
+.editor-panel, .output-panel { min-height: 0; flex: 1; display: none; }
+.editor-panel.active, .output-panel.active { display: block; }
+.code-editor, .code-editor .cm-editor { height: 100%; }
+.code-editor .cm-editor { font: 0.86rem/1.55 "SFMono-Regular", Consolas, "Liberation Mono", monospace; }
+.code-editor .cm-scroller { overflow: auto; }
+.output-panel { background: white; color: #202020; }
+.output-panel iframe { width: 100%; height: 100%; min-height: 30rem; display: block; border: 0; background: white; }
+.preview-empty { height: 100%; min-height: 30rem; display: grid; place-content: center; justify-items: center; gap: 0.5rem; color: #666; }
+.preview-empty svg { width: 2rem; }
+.console-output { height: 100%; min-height: 30rem; overflow: auto; padding: 0.5rem; background: var(--inset); color: var(--ink); font: 0.75rem/1.5 ui-monospace, monospace; }
+.console-output > p { padding: 0.5rem; color: var(--ink-soft); }
+.console-entry { display: grid; grid-template-columns: 5.5rem 3.5rem 1fr auto; gap: 0.5rem; padding: 0.35rem 0.5rem; border-bottom: 1px solid var(--rule-soft); overflow-wrap: anywhere; }
+.console-entry time, .console-entry small { color: var(--ink-soft); }
+.console-entry.info strong { color: var(--blue); }
+.console-entry.warn strong { color: #9b6511; }
+.console-entry.error strong { color: var(--accent); }
 
 .dialog-backdrop { position: fixed; inset: 0; z-index: 400; display: grid; place-items: center; padding: 1rem; background: rgb(18 12 5 / 0.72); }
 .intro-dialog { width: min(31rem, 100%); padding: 2rem; border: 1px solid var(--rule); border-radius: 6px; background: var(--paper); box-shadow: 0 20px 60px rgb(0 0 0 / 0.35); }
@@ -204,6 +239,16 @@ pre { overflow: auto; padding: 1.1rem; border: 1px solid var(--rule); background
   .notes-list { max-height: 17rem; border: 1px solid var(--rule); }
   .note-detail { min-height: 28rem; border: 1px solid var(--rule); border-top: 0; }
   .note-detail-heading { flex-direction: column; }
+  .playground-view { padding: 1rem; }
+  .playground-heading { align-items: stretch; flex-direction: column; }
+  .playground-controls { flex-wrap: wrap; }
+  .playground-layout { display: block; min-height: 0; border: 0; }
+  .editor-workspace, .output-workspace { height: 28rem; border: 1px solid var(--rule); }
+  .output-workspace { margin-top: 1rem; }
+  .workspace-tabs { overflow-x: auto; }
+  .workspace-tabs button { flex: 0 0 auto; }
+  .workspace-tabs .clear-console { margin-left: 0; }
+  .output-panel iframe, .preview-empty, .console-output { min-height: 25rem; }
   .bottom-nav { position: fixed; inset: auto 0 0; z-index: 150; height: 4rem; display: grid; grid-template-columns: repeat(5, 1fr); border-top: 1px solid var(--rule); background: var(--surface); }
   .bottom-nav button { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.15rem; min-width: 0; border: 0; background: transparent; color: var(--ink-soft); font-size: 0.62rem; }
   .bottom-nav button.active { color: var(--accent); }

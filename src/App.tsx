@@ -10,11 +10,13 @@ import {
   WifiOff,
   X,
 } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { lazy, Suspense, useEffect, useMemo, useState } from 'react';
 
 import { hashFor, parseHash, resolveTheme, type Route, type ThemePreference, type View } from './app-state';
 import { DocsView } from './docs/DocsView';
 import { AllNotesView } from './notes/AllNotesView';
+
+const WebPlayground = lazy(() => import('./playground/WebPlayground').then((module) => ({ default: module.WebPlayground })));
 
 const navigation: Array<{ view: View; label: string; icon: typeof BookOpen }> = [
   { view: 'docs', label: 'Docs', icon: BookOpen },
@@ -112,7 +114,7 @@ export default function App() {
 
       {route.view === 'docs' && <DocsView documentId={route.documentId} pagePath={route.pagePath} onNavigate={(documentId, pagePath) => navigate({ view: 'docs', documentId, pagePath })} onOpenAllNotes={() => selectView('notes')} />}
       {activeView === 'notes' && <AllNotesView onOpenPage={(documentId, pagePath) => navigate({ view: 'docs', documentId, pagePath })} />}
-      {activeView === 'playground' && <Placeholder title="Web Playground" text="Experiment with local HTML, CSS, and JavaScript in an isolated preview." />}
+      {activeView === 'playground' && <Suspense fallback={<p className="loading-view" role="status">Loading playground…</p>}><WebPlayground /></Suspense>}
       {activeView === 'storage' && <Placeholder title="Offline Storage" text="Review cached guides, note backups, and browser storage protection." />}
       {activeView === 'settings' && (
         <section className="settings-view" id="main-content">
