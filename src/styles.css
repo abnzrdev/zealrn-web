@@ -10,6 +10,8 @@
   --rule-soft: #d9d0b8;
   --accent: #b4322b;
   --accent-hover: #75201a;
+  --accent-button: #b4322b;
+  --accent-button-hover: #75201a;
   --on-accent: #faf4e2;
   --blue: #3e5f7a;
   --green: #4a7a4a;
@@ -29,6 +31,8 @@
   --rule-soft: #554c3f;
   --accent: #e8534a;
   --accent-hover: #f0754f;
+  --accent-button: #a62d27;
+  --accent-button-hover: #84211c;
   --on-accent: #faf4e2;
   --blue: #5486ac;
   --green: #75a878;
@@ -132,8 +136,8 @@ pre { overflow: auto; padding: 1.1rem; border: 1px solid var(--rule); background
 .export-menu > div button:hover { background: var(--surface-hover); }
 .notes-pane textarea { width: 100%; min-height: 15rem; flex: 1; resize: none; padding: 0.75rem; border: 1px solid var(--rule); background: var(--paper); line-height: 1.55; }
 .notes-local-copy { margin: 0; color: var(--ink-soft); font-size: 0.7rem; line-height: 1.4; }
-.primary-button { min-height: 2.6rem; padding: 0.65rem 1rem; border: 1px solid var(--accent); border-radius: 3px; background: var(--accent); color: var(--on-accent); font-weight: 650; }
-.primary-button:hover:not(:disabled) { background: var(--accent-hover); }
+.primary-button { min-height: 2.6rem; padding: 0.65rem 1rem; border: 1px solid var(--accent-button); border-radius: 3px; background: var(--accent-button); color: var(--on-accent); font-weight: 650; }
+.primary-button:hover:not(:disabled) { background: var(--accent-button-hover); }
 .link-button { display: inline-flex; align-items: center; text-decoration: none; }
 .placeholder-view, .settings-view, .desktop-view { width: min(48rem, calc(100% - 2rem)); margin: auto; padding: 4rem 1rem; }
 .settings-view label { display: block; margin-bottom: 0.45rem; font-weight: 650; }
@@ -257,7 +261,7 @@ pre { overflow: auto; padding: 1.1rem; border: 1px solid var(--rule); background
 .text-button { width: 100%; border: 0; background: transparent; color: var(--accent); }
 .pwa-notice { position: fixed; z-index: 350; right: 1rem; bottom: 1rem; display: flex; align-items: center; gap: 0.6rem; max-width: min(32rem, calc(100% - 2rem)); padding: 0.65rem; border: 1px solid var(--rule); background: var(--paper); box-shadow: 0 8px 30px rgb(0 0 0 / 0.22); }
 .pwa-notice > svg { width: 1.1rem; color: var(--green); }
-.pwa-notice > button:not(.icon-button) { padding: 0.45rem 0.65rem; border: 1px solid var(--accent); background: var(--accent); color: var(--on-accent); }
+.pwa-notice > button:not(.icon-button) { padding: 0.45rem 0.65rem; border: 1px solid var(--accent-button); background: var(--accent-button); color: var(--on-accent); }
 
 @media (max-width: 1050px) {
   .topnav { margin-left: 0; }

@@ -100,7 +100,7 @@ export default function App() {
         <button className="icon-button menu-button" type="button" aria-label="Open navigation" onClick={() => setMenuOpen(true)}>
           <Menu aria-hidden="true" />
         </button>
-        <button className="brand" type="button" onClick={() => selectView('docs')} aria-label="ZealRN Web home">
+        <button className="brand" type="button" onClick={() => selectView('docs')} aria-label="ZealRN Web Trial home">
           <img src={`${import.meta.env.BASE_URL}icons/zealrn-web.svg`} alt="" />
           <span>ZealRN <b>Web</b></span>
           <small>Trial</small>
