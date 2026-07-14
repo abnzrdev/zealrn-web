@@ -189,3 +189,12 @@ export function getNotesRepository(): Promise<NotesRepository> {
   });
   return applicationRepository;
 }
+
+export async function resetApplicationDatabase(): Promise<void> {
+  if (applicationRepository) {
+    const repository = await applicationRepository;
+    repository.close();
+    applicationRepository = undefined;
+  }
+  await deleteZealDatabase();
+}

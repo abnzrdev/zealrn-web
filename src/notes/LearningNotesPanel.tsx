@@ -1,7 +1,8 @@
-import { Download, NotebookTabs, Quote, Save, Trash2, X } from 'lucide-react';
+import { NotebookTabs, Quote, Save, Trash2, X } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { appendSelection } from './note-utils';
+import { NoteExportMenu } from './NoteExportMenu';
 import {
   getNotesRepository,
   pageIdentity,
@@ -138,7 +139,7 @@ export function LearningNotesPanel({ page, onOpenAllNotes, repository: suppliedR
         <button type="button" onClick={saveNow} disabled={loading || status === 'Saving…'}><Save aria-hidden="true" /> Save</button>
         <button type="button" onClick={addSelection} disabled={loading}><Quote aria-hidden="true" /> Add Selection</button>
         <button type="button" onClick={onOpenAllNotes}><NotebookTabs aria-hidden="true" /> All Notes</button>
-        <button type="button" disabled title="Note export is added in the backup phase"><Download aria-hidden="true" /> Export</button>
+        <NoteExportMenu note={note} />
         <button className="danger-action" type="button" onClick={() => void deleteNote()} disabled={!note}><Trash2 aria-hidden="true" /><span className="sr-only">Delete note</span></button>
       </div>
       <textarea

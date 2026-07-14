@@ -2,6 +2,7 @@ import { ArrowUpRight, Save, Search, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 import { getNotesRepository, type LearningNote, type NotesRepository } from './storage';
+import { NoteExportMenu } from './NoteExportMenu';
 
 interface AllNotesViewProps {
   onOpenPage: (documentId: string, pagePath: string) => void;
@@ -99,7 +100,7 @@ export function AllNotesView({ onOpenPage, repository: suppliedRepository }: All
             <>
               <div className="note-detail-heading"><div><p className="breadcrumb">{selected.documentTitle} / {selected.pagePath}</p><h2>{selected.pageTitle}</h2></div><button className="secondary-button" type="button" onClick={() => onOpenPage(selected.documentId, selected.pagePath)}><ArrowUpRight aria-hidden="true" /> Open documentation</button></div>
               <textarea aria-label="Selected note content" value={content} onChange={(event) => setContent(event.target.value)} onKeyDown={(event) => { if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's') { event.preventDefault(); void save(); } }} />
-              <div className="note-detail-actions"><button className="primary-button" type="button" onClick={() => void save()}><Save aria-hidden="true" /> Save changes</button><button className="secondary-button danger-action" type="button" onClick={() => void remove()}><Trash2 aria-hidden="true" /> Delete</button><span role="status">{message}</span></div>
+              <div className="note-detail-actions"><button className="primary-button" type="button" onClick={() => void save()}><Save aria-hidden="true" /> Save changes</button><NoteExportMenu note={{ ...selected, content }} /><button className="secondary-button danger-action" type="button" onClick={() => void remove()}><Trash2 aria-hidden="true" /> Delete</button><span role="status">{message}</span></div>
             </>
           ) : <div className="empty-detail"><strong>Select a note</strong><p>Choose a saved note to read or edit it.</p></div>}
         </section>

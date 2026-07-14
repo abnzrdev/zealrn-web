@@ -15,6 +15,7 @@ import { lazy, Suspense, useEffect, useMemo, useState } from 'react';
 import { hashFor, parseHash, resolveTheme, type Route, type ThemePreference, type View } from './app-state';
 import { DocsView } from './docs/DocsView';
 import { AllNotesView } from './notes/AllNotesView';
+import { StorageView } from './storage/StorageView';
 
 const WebPlayground = lazy(() => import('./playground/WebPlayground').then((module) => ({ default: module.WebPlayground })));
 
@@ -29,16 +30,6 @@ const navigation: Array<{ view: View; label: string; icon: typeof BookOpen }> = 
 
 function navigate(route: Route) {
   window.location.hash = hashFor(route);
-}
-
-function Placeholder({ title, text }: { title: string; text: string }) {
-  return (
-    <section className="placeholder-view" aria-labelledby="placeholder-title">
-      <p className="eyebrow">ZealRN Web trial</p>
-      <h1 id="placeholder-title">{title}</h1>
-      <p>{text}</p>
-    </section>
-  );
 }
 
 export default function App() {
@@ -115,7 +106,7 @@ export default function App() {
       {route.view === 'docs' && <DocsView documentId={route.documentId} pagePath={route.pagePath} onNavigate={(documentId, pagePath) => navigate({ view: 'docs', documentId, pagePath })} onOpenAllNotes={() => selectView('notes')} />}
       {activeView === 'notes' && <AllNotesView onOpenPage={(documentId, pagePath) => navigate({ view: 'docs', documentId, pagePath })} />}
       {activeView === 'playground' && <Suspense fallback={<p className="loading-view" role="status">Loading playground…</p>}><WebPlayground /></Suspense>}
-      {activeView === 'storage' && <Placeholder title="Offline Storage" text="Review cached guides, note backups, and browser storage protection." />}
+      {activeView === 'storage' && <StorageView />}
       {activeView === 'settings' && (
         <section className="settings-view" id="main-content">
           <p className="eyebrow">Preferences</p><h1>Settings</h1>
