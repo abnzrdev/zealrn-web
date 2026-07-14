@@ -1,14 +1,15 @@
-import { ArrowLeft, ArrowRight, BookOpen, Check, Copy, Library as LibraryIcon, Search, X } from 'lucide-react';
+import { ArrowLeft, ArrowRight, BookOpen, Check, Copy, Library as LibraryIcon, NotebookPen, Search, X } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 import { documents, findPage, searchPages } from './library';
 import type { DocumentGuide, DocumentPage } from './types';
+import { LearningNotesPanel } from '../notes/LearningNotesPanel';
 
 interface DocsViewProps {
   documentId: string;
   pagePath: string;
   onNavigate: (documentId: string, pagePath: string) => void;
-  notesPanel?: React.ReactNode;
+  onOpenAllNotes: () => void;
 }
 
 interface ReaderProps {
@@ -16,9 +17,10 @@ interface ReaderProps {
   page: DocumentPage;
   onNavigate: (documentId: string, pagePath: string) => void;
   onOpenLibrary: () => void;
+  onOpenNotes: () => void;
 }
 
-function Reader({ document, page, onNavigate, onOpenLibrary }: ReaderProps) {
+function Reader({ document, page, onNavigate, onOpenLibrary, onOpenNotes }: ReaderProps) {
   const [copied, setCopied] = useState<string>();
   const pageIndex = document.pages.findIndex((candidate) => candidate.pagePath === page.pagePath);
   const previous = document.pages[pageIndex - 1];
@@ -33,9 +35,10 @@ function Reader({ document, page, onNavigate, onOpenLibrary }: ReaderProps) {
   return (
     <main className="reader-pane" id="main-content">
       <article className="document-page" data-document-reader>
-        <button className="secondary-button mobile-library-trigger" type="button" onClick={onOpenLibrary}>
-          <LibraryIcon aria-hidden="true" /> Library
-        </button>
+        <div className="mobile-reader-actions">
+          <button className="secondary-button mobile-library-trigger" type="button" onClick={onOpenLibrary}><LibraryIcon aria-hidden="true" /> Library</button>
+          <button className="secondary-button mobile-notes-trigger" type="button" onClick={onOpenNotes}><NotebookPen aria-hidden="true" /> Notes</button>
+        </div>
         <p className="breadcrumb">{document.title} / {page.title}</p>
         <h1>{page.title}</h1>
         <p className="lede">{page.summary}</p>
@@ -72,9 +75,10 @@ function Reader({ document, page, onNavigate, onOpenLibrary }: ReaderProps) {
   );
 }
 
-export function DocsView({ documentId, pagePath, onNavigate, notesPanel }: DocsViewProps) {
+export function DocsView({ documentId, pagePath, onNavigate, onOpenAllNotes }: DocsViewProps) {
   const [query, setQuery] = useState('');
   const [libraryOpen, setLibraryOpen] = useState(false);
+  const [notesOpen, setNotesOpen] = useState(false);
   const document = documents.find((candidate) => candidate.id === documentId) ?? documents[0]!;
   const page = findPage(document.id, pagePath) ?? document.pages[0]!;
   const results = useMemo(() => searchPages(query), [query]);
@@ -125,15 +129,8 @@ export function DocsView({ documentId, pagePath, onNavigate, notesPanel }: DocsV
         ))}
         <p className="library-note"><BookOpen aria-hidden="true" /> ZealRN Web contains a small starter library. ZealRN Desktop supports the full downloadable docset catalog.</p>
       </aside>
-      <Reader document={document} page={page} onNavigate={onNavigate} onOpenLibrary={() => setLibraryOpen(true)} />
-      {notesPanel ?? (
-        <aside className="notes-pane" aria-label="Learning Notes">
-          <div className="pane-heading"><span>Learning Notes</span><span className="status-dot">New note</span></div>
-          <div className="note-context"><strong>{document.title}</strong><span>{page.title}</span><code>{page.pagePath}</code></div>
-          <textarea aria-label="Note for current page" placeholder="Write what you learned from this page…" />
-          <button className="primary-button" type="button" disabled>Save note</button>
-        </aside>
-      )}
+      <Reader document={document} page={page} onNavigate={onNavigate} onOpenLibrary={() => setLibraryOpen(true)} onOpenNotes={() => setNotesOpen(true)} />
+      <LearningNotesPanel page={{ documentId: document.id, documentTitle: document.title, pagePath: page.pagePath, pageTitle: page.title }} onOpenAllNotes={onOpenAllNotes} mobileOpen={notesOpen} onCloseMobile={() => setNotesOpen(false)} />
     </div>
   );
 }

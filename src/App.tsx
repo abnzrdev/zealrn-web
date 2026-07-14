@@ -14,6 +14,7 @@ import { useEffect, useMemo, useState } from 'react';
 
 import { hashFor, parseHash, resolveTheme, type Route, type ThemePreference, type View } from './app-state';
 import { DocsView } from './docs/DocsView';
+import { AllNotesView } from './notes/AllNotesView';
 
 const navigation: Array<{ view: View; label: string; icon: typeof BookOpen }> = [
   { view: 'docs', label: 'Docs', icon: BookOpen },
@@ -109,8 +110,8 @@ export default function App() {
         </div>
       </header>
 
-      {route.view === 'docs' && <DocsView documentId={route.documentId} pagePath={route.pagePath} onNavigate={(documentId, pagePath) => navigate({ view: 'docs', documentId, pagePath })} />}
-      {activeView === 'notes' && <Placeholder title="All Notes" text="Search and review page-linked notes stored only in this browser." />}
+      {route.view === 'docs' && <DocsView documentId={route.documentId} pagePath={route.pagePath} onNavigate={(documentId, pagePath) => navigate({ view: 'docs', documentId, pagePath })} onOpenAllNotes={() => selectView('notes')} />}
+      {activeView === 'notes' && <AllNotesView onOpenPage={(documentId, pagePath) => navigate({ view: 'docs', documentId, pagePath })} />}
       {activeView === 'playground' && <Placeholder title="Web Playground" text="Experiment with local HTML, CSS, and JavaScript in an isolated preview." />}
       {activeView === 'storage' && <Placeholder title="Offline Storage" text="Review cached guides, note backups, and browser storage protection." />}
       {activeView === 'settings' && (
