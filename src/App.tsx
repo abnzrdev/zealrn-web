@@ -13,6 +13,7 @@ import {
 import { useEffect, useMemo, useState } from 'react';
 
 import { hashFor, parseHash, resolveTheme, type Route, type ThemePreference, type View } from './app-state';
+import { DocsView } from './docs/DocsView';
 
 const navigation: Array<{ view: View; label: string; icon: typeof BookOpen }> = [
   { view: 'docs', label: 'Docs', icon: BookOpen },
@@ -34,53 +35,6 @@ function Placeholder({ title, text }: { title: string; text: string }) {
       <h1 id="placeholder-title">{title}</h1>
       <p>{text}</p>
     </section>
-  );
-}
-
-function DocsShell() {
-  return (
-    <div className="docs-layout">
-      <aside className="library-pane" aria-label="Starter library">
-        <div className="pane-heading">
-          <span>Library</span>
-          <span className="count">5 guides</span>
-        </div>
-        {['HTML', 'CSS', 'JavaScript', 'Git', 'Python basics'].map((title, index) => (
-          <button className={index === 0 ? 'library-item active' : 'library-item'} key={title} type="button">
-            <span className="doc-mark">{title.slice(0, 2).toUpperCase()}</span>
-            <span>{title}</span>
-          </button>
-        ))}
-        <p className="library-note">A small starter library. Desktop supports the full downloadable catalog.</p>
-      </aside>
-
-      <main className="reader-pane" id="main-content">
-        <article className="document-page">
-          <p className="breadcrumb">HTML / Introduction</p>
-          <h1>Build a page that means something</h1>
-          <p className="lede">
-            HTML gives content structure. Start with the document outline, then add elements for headings,
-            paragraphs, links, and controls.
-          </p>
-          <div className="callout">
-            <strong>Trial library</strong>
-            <span>The complete guides are added in the next focused implementation slice.</span>
-          </div>
-          <pre><code>{'<main>\n  <h1>Hello, web</h1>\n  <p>A clear first page.</p>\n</main>'}</code></pre>
-        </article>
-      </main>
-
-      <aside className="notes-pane" aria-label="Learning Notes">
-        <div className="pane-heading"><span>Learning Notes</span><span className="status-dot">New note</span></div>
-        <div className="note-context">
-          <strong>HTML</strong>
-          <span>Introduction</span>
-          <code>introduction</code>
-        </div>
-        <textarea aria-label="Note for current page" placeholder="Write what you learned from this page…" />
-        <button className="primary-button" type="button" disabled>Save note</button>
-      </aside>
-    </div>
   );
 }
 
@@ -155,7 +109,7 @@ export default function App() {
         </div>
       </header>
 
-      {activeView === 'docs' && <DocsShell />}
+      {route.view === 'docs' && <DocsView documentId={route.documentId} pagePath={route.pagePath} onNavigate={(documentId, pagePath) => navigate({ view: 'docs', documentId, pagePath })} />}
       {activeView === 'notes' && <Placeholder title="All Notes" text="Search and review page-linked notes stored only in this browser." />}
       {activeView === 'playground' && <Placeholder title="Web Playground" text="Experiment with local HTML, CSS, and JavaScript in an isolated preview." />}
       {activeView === 'storage' && <Placeholder title="Offline Storage" text="Review cached guides, note backups, and browser storage protection." />}
