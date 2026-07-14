@@ -56,7 +56,7 @@ function Reader({ document, page, onNavigate, onOpenLibrary, onOpenNotes }: Read
                     {copied === `${sectionIndex}` ? 'Copied' : 'Copy'}
                   </button>
                 </div>
-                <pre><code>{section.code.source}</code></pre>
+                <pre tabIndex={0} aria-label={`${section.code.language} code example`}><code>{section.code.source}</code></pre>
               </div>
             )}
           </section>
