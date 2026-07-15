@@ -5,7 +5,6 @@ import { useEffect, useRef, useState } from 'react';
 import { CodeEditor, type EditorLanguage } from './CodeEditor';
 import {
   appendConsoleEntry,
-  createPreviewDocument,
   projectFiles,
   type ConsoleEntry,
   type PlaygroundSource,
@@ -56,7 +55,7 @@ export function WebPlayground() {
   const [activeEditor, setActiveEditor] = useState<EditorLanguage>('html');
   const [outputTab, setOutputTab] = useState<'preview' | 'console'>('preview');
   const [autoRun, setAutoRun] = useState(false);
-  const [preview, setPreview] = useState<string>();
+  const [previewRun, setPreviewRun] = useState<{ channel: string; source: PlaygroundSource }>();
   const [channel, setChannel] = useState('');
   const [consoleEntries, setConsoleEntries] = useState<ConsoleEntry[]>([]);
   const [theme, setTheme] = useState<'light' | 'dark'>(() => document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light');
@@ -73,7 +72,7 @@ export function WebPlayground() {
     const nextChannel = crypto.randomUUID();
     setConsoleEntries([]);
     setChannel(nextChannel);
-    setPreview(createPreviewDocument(source, nextChannel));
+    setPreviewRun({ channel: nextChannel, source });
     setOutputTab('preview');
   };
 
@@ -85,7 +84,12 @@ export function WebPlayground() {
 
   useEffect(() => {
     const receive = (event: MessageEvent) => {
-      if (event.source !== iframe.current?.contentWindow || event.data?.channel !== channel || event.data?.type !== 'console') return;
+      if (event.source !== iframe.current?.contentWindow) return;
+      if (event.data?.type === 'ready' && previewRun) {
+        iframe.current?.contentWindow?.postMessage({ type: 'run', ...previewRun }, '*');
+        return;
+      }
+      if (event.data?.channel !== channel || event.data?.type !== 'console') return;
       const level = ['log', 'info', 'warn', 'error'].includes(event.data.level) ? event.data.level : 'log';
       const entry: ConsoleEntry = {
         id: messageId.current++,
@@ -99,7 +103,7 @@ export function WebPlayground() {
     };
     window.addEventListener('message', receive);
     return () => window.removeEventListener('message', receive);
-  }, [channel]);
+  }, [channel, previewRun]);
 
   const updateSource = (language: EditorLanguage, value: string) => setSource((current) => ({ ...current, [language]: value }));
   const changed = source.html !== starterSource.html || source.css !== starterSource.css || source.javascript !== starterSource.javascript;
@@ -107,7 +111,7 @@ export function WebPlayground() {
   const reset = () => {
     if (changed && !window.confirm('Reset all editors to the starter example?')) return;
     setSource(starterSource);
-    setPreview(undefined);
+    setPreviewRun(undefined);
     setConsoleEntries([]);
   };
 
@@ -137,7 +141,7 @@ export function WebPlayground() {
             <button className="clear-console" type="button" onClick={() => setConsoleEntries([])}><Trash2 aria-hidden="true" /> Clear Console</button>
           </div>
           <div className={outputTab === 'preview' ? 'output-panel active' : 'output-panel'} role="tabpanel">
-            {preview ? <iframe ref={iframe} title="Playground preview" sandbox="allow-scripts" referrerPolicy="no-referrer" srcDoc={preview} /> : <div className="preview-empty"><Play aria-hidden="true" /><strong>Ready to run</strong><span>Edit the example, then click Run.</span></div>}
+            {previewRun ? <iframe key={previewRun.channel} ref={iframe} title="Playground preview" sandbox="allow-scripts" referrerPolicy="no-referrer" src={`${import.meta.env.BASE_URL}playground-runner.html`} /> : <div className="preview-empty"><Play aria-hidden="true" /><strong>Ready to run</strong><span>Edit the example, then click Run.</span></div>}
           </div>
           <div className={outputTab === 'console' ? 'output-panel active' : 'output-panel'} role="tabpanel">
             <div className="console-output" role="log" aria-label="JavaScript console">

@@ -1,23 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
-import { appendConsoleEntry, createPreviewDocument, projectFiles, type ConsoleEntry } from './preview';
+import { appendConsoleEntry, projectFiles, type ConsoleEntry } from './preview';
 
 describe('playground preview', () => {
-  it('encodes difficult Unicode and closing tags outside executable markup', () => {
-    const source = {
-      html: '<p>Привет café</p>',
-      css: 'body::after { content: "</style>"; }',
-      javascript: 'console.log(`</script>`, "✓");',
-    };
-    const document = createPreviewDocument(source, 'run-1');
-
-    expect(document).not.toContain(source.html);
-    expect(document).not.toContain(source.css);
-    expect(document).not.toContain(source.javascript);
-    expect(document).toContain("default-src 'none'");
-    expect(document).toContain("connect-src 'none'");
-  });
-
   it('creates a standalone three-file project', () => {
     const files = projectFiles({ html: '<main>Hello</main>', css: 'main { color: red; }', javascript: 'console.log("ready")' });
     expect(files['index.html']).toContain('<link rel="stylesheet" href="style.css">');
