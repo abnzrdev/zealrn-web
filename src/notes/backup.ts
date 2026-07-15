@@ -5,6 +5,10 @@ import { pageIdentity, type LearningNote } from './storage';
 export const BACKUP_FORMAT = 'zealrn-web-notes';
 export const BACKUP_VERSION = 1;
 export const APP_VERSION = '0.1.0-alpha';
+export const MAX_IMPORT_BYTES = 5 * 1024 * 1024;
+const MAX_IMPORT_NOTES = 10_000;
+const MAX_METADATA_LENGTH = 4096;
+const MAX_NOTE_CONTENT_LENGTH = 1024 * 1024;
 
 export interface NotesBackup {
   format: typeof BACKUP_FORMAT;
@@ -53,8 +57,14 @@ export function createJsonBackup(notes: LearningNote[]): NotesBackup {
 function isNote(value: unknown): value is LearningNote {
   if (!value || typeof value !== 'object') return false;
   const note = value as Partial<LearningNote>;
-  return [note.id, note.documentId, note.documentTitle, note.pagePath, note.pageTitle, note.content, note.createdAt, note.updatedAt]
-    .every((field) => typeof field === 'string');
+  const metadata = [note.id, note.documentId, note.documentTitle, note.pagePath, note.pageTitle];
+  return metadata.every((field) => typeof field === 'string' && field.length <= MAX_METADATA_LENGTH)
+    && typeof note.content === 'string'
+    && note.content.length <= MAX_NOTE_CONTENT_LENGTH
+    && typeof note.createdAt === 'string'
+    && Number.isFinite(Date.parse(note.createdAt))
+    && typeof note.updatedAt === 'string'
+    && Number.isFinite(Date.parse(note.updatedAt));
 }
 
 function desktopNote(value: Record<string, unknown>): LearningNote | undefined {
@@ -66,7 +76,7 @@ function desktopNote(value: Record<string, unknown>): LearningNote | undefined {
   const createdAt = value.created_at;
   const updatedAt = value.updated_at;
   if (![documentId, documentTitle, pagePath, pageTitle, content, createdAt, updatedAt].every((field) => typeof field === 'string')) return undefined;
-  return {
+  const note: LearningNote = {
     id: `desktop-${String(value.note_id ?? crypto.randomUUID())}`,
     documentId: documentId as string,
     documentTitle: documentTitle as string,
@@ -77,20 +87,26 @@ function desktopNote(value: Record<string, unknown>): LearningNote | undefined {
     createdAt: createdAt as string,
     updatedAt: updatedAt as string,
   };
+  return isNote(note) ? note : undefined;
 }
 
 export function parseNotesImport(json: string): LearningNote[] {
+  if (new Blob([json]).size > MAX_IMPORT_BYTES) throw new Error('The notes backup is too large.');
   const parsed: unknown = JSON.parse(json);
   if (parsed && typeof parsed === 'object' && (parsed as Partial<NotesBackup>).format === BACKUP_FORMAT) {
     const backup = parsed as Partial<NotesBackup>;
     if (backup.version !== BACKUP_VERSION || !Array.isArray(backup.notes)) throw new Error('Unsupported ZealRN Web backup version.');
+    if (backup.notes.length > MAX_IMPORT_NOTES) throw new Error('The backup contains too many notes.');
     const notes = backup.notes.filter(isNote).map((note) => ({ ...note, pageIdentity: pageIdentity(note.documentId, note.pagePath) }));
     if (notes.length !== backup.notes.length) throw new Error('The backup contains invalid note records.');
+    const identities = new Set(notes.map((note) => note.pageIdentity));
+    if (identities.size !== notes.length) throw new Error('The backup contains duplicate page notes.');
     return notes;
   }
   if (parsed && typeof parsed === 'object' && (parsed as Record<string, unknown>).format_version === 1) {
     const note = desktopNote(parsed as Record<string, unknown>);
     if (note) return [note];
+    throw new Error('The desktop export contains an invalid note record.');
   }
   throw new Error('This file is not a supported ZealRN notes backup.');
 }

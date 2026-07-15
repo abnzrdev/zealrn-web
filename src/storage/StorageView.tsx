@@ -2,7 +2,7 @@ import { Archive, Database, Download, FileUp, HardDrive, ShieldCheck, Trash2 } f
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { documents } from '../docs/library';
-import { createJsonBackup, createNotesZip, downloadFile, parseNotesImport, planNotesImport, type ImportPlan } from '../notes/backup';
+import { createJsonBackup, createNotesZip, downloadFile, MAX_IMPORT_BYTES, parseNotesImport, planNotesImport, type ImportPlan } from '../notes/backup';
 import { getNotesRepository, resetApplicationDatabase, type LearningNote, type NotesRepository } from '../notes/storage';
 
 interface StorageStats {
@@ -58,6 +58,7 @@ export function StorageView({ repository: suppliedRepository }: { repository?: N
   const chooseImport = async (file?: File) => {
     if (!file || !repository) return;
     try {
+      if (file.size > MAX_IMPORT_BYTES) throw new Error('The notes backup is too large.');
       const incoming = parseNotesImport(await file.text());
       const plan = planNotesImport(incoming, await repository.search(''));
       setPendingNotes(incoming);
