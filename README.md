@@ -1,10 +1,10 @@
 # ZealRN Web
 
-ZealRN Web is a free browser trial of [ZealRN Desktop](https://github.com/abnzrdev/zealrn):
+ZealRN Web is a free browser trial of [ZealRN Desktop](https://github.com/zealrn/zealrn-desktop):
 
 **Read documentation → write page-linked notes → test HTML/CSS/JavaScript → work offline → export a backup.**
 
-Live app: <https://abnzrdev.github.io/zealrn-web/>
+Live app: <https://zealrn.github.io/zealrn-web/>
 
 ## Trial scope
 
