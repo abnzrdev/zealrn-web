@@ -115,7 +115,7 @@ export function StorageView({ repository: suppliedRepository }: { repository?: N
         <article><HardDrive aria-hidden="true" /><span>Used</span><strong>{formatBytes(stats.usage)}</strong><small>of {formatBytes(stats.quota)}</small></article>
         <article><Database aria-hidden="true" /><span>Learning notes</span><strong>{stats.notes}</strong><small>IndexedDB schema v1</small></article>
         <article><Archive aria-hidden="true" /><span>Starter guides</span><strong>{documents.length}</strong><small>Bundled for offline use</small></article>
-        <article><Download aria-hidden="true" /><span>Application caches</span><strong>{stats.caches}</strong><small>ZealRN Web 0.1.0-alpha</small></article>
+        <article><Download aria-hidden="true" /><span>Application caches</span><strong>{stats.caches}</strong><small>ZealRN Web 0.1.0</small></article>
       </div>
       <div className="storage-sections">
         <section>

@@ -4,7 +4,7 @@ import { pageIdentity, type LearningNote } from './storage';
 
 export const BACKUP_FORMAT = 'zealrn-web-notes';
 export const BACKUP_VERSION = 1;
-export const APP_VERSION = '0.1.0-alpha';
+export const APP_VERSION = '0.1.0';
 export const MAX_IMPORT_BYTES = 5 * 1024 * 1024;
 const MAX_IMPORT_NOTES = 10_000;
 const MAX_METADATA_LENGTH = 4096;

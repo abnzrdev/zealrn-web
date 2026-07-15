@@ -133,7 +133,7 @@ export default function App() {
           <h1>Get ZealRN Desktop</h1>
           <p>ZealRN Web is a free trial with five compact starter guides. Desktop is the complete offline learning workspace.</p>
           <ul className="desktop-features"><li><strong>Full docset catalog</strong><span>Download from the complete Zeal catalog and keep large libraries offline.</span></li><li><strong>Native local storage</strong><span>SQLite notes and filesystem exports without browser storage limits.</span></li><li><strong>Linux and Windows packages</strong><span>AppImage, Debian package, portable Windows ZIP, and Windows installer.</span></li><li><strong>Developer tools</strong><span>Native external-terminal integration alongside documentation and the Web Playground.</span></li></ul>
-          <div className="callout"><strong>Desktop alpha download coming soon.</strong><span>Follow development on GitHub.</span></div>
+          <div className="callout"><strong>Desktop download coming soon.</strong><span>Follow development on GitHub.</span></div>
           <a className="primary-button link-button" href="https://github.com/abnzrdev/zealrn" rel="noreferrer">View ZealRN Desktop</a>
         </section>
       )}
